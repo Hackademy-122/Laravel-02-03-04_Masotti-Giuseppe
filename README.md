@@ -1,66 +1,78 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+## Form
+- Per funzionare lato backend ha bisogno di 2 elementi fondamentali
+- Method: accetta GET o POST, POST è il tipo di richiesta che mi serve se voglio inviare dati al mio backend
+- Action: la rotta che deve scattare al submit
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Per utilizzare i dati del form all'interno di una funzione, dobbiamo catturare la richiesta http, come? Inserendo all'interno delle tonde
+di una funzione come parametro un oggetto di classe Request (Request $request)
 
-## About Laravel
+Ricordati di inserire anche il @csrf token!
+è un sistema di sicurezza per bloccare csrf attack!
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Inoltre ogni input deve avere un attributa name, serve per far riconoscere gli input a laravel. Senza name i dati non vengono passati al mio backend
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Per accedere agli input all'interno della request, facciamo cosi:
+$request->input('nomeInput') cioè vai a prendere all'interno della request l'input che ha nome nomeInput
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Mail
+Per inviare una mail in laravel, ci serve un Mailable.
+Per creare un mailable: php artisan make:mail NomeMail
+Configura il mailable con i dati che ti servono (oggetto, mittente, e contenuto)
+NB. Nella vista del contenuto NON PUOI fare riferemento a link esterni come al tuo css
+per inviare una mail:
+Mail::to($email)->send(new NomeMailable);
 
-## Learning Laravel
+Per portare nella mail dei dati, sfrutto il fatto che il Mailable è una classe PHP, parametrizzando il costruttore.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+# DATABASE
+- Step 1. Collegare un database 
+- Step 2
+    Per strutturare il mio db in laravel, si utilizzano le migrazioni
+    NB. Le migrazioni non applicano cambiamenti in tempo reale al mio db, ma le devo LANCIARE
+    **php artisan migrate** lancia le migrazioni. Tecnicamente esegue la funzione up di tutte le migrazioni
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+    **php artisan migrate:rollback** torna indietro delle ultime migrazioni fatte. Tecnicamente lancia la funzione down di tutte le migrazioni
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    per creare una nuova migrazione: **php artisan make:migration nome_migrazione**
+    NB. il nome di una migrazione è importantissimo
+- Step 3.
+  Per comunicare con il database Laravel usa Eloquent. Un sistema che tramite dei "modelli" è in grado di interagire con il database
+  Per creare un modello **php artisan make:model**
+  All'interno del modellop devo spiegare a Laravel come è fatto il mio oggetto.
+  Metto un array $fillable, con all'interno tutti i campi che io voglio poter compilare
+  NB. Se un campo non è nel fillable, non potrò scriverci all'interno nel database
+- Step 4.
+  Per creare un articolo, utilizziamo il Mass Assignment:
+  $article = Article::create([
+    "nome campo del fillable" => $request->campo form,
+    ecc. ecc
+  ])
+- Step 5.
+  Ora che i nostri articoli sono nel database, possiamo tranquillamente prenderceli quando ne abbiamo bisogno.
+  Per esempio, per prenderli tutti, possiamo fare cosi:
+  $articles = Article::all();
 
-## Laravel Sponsors
+  Ora non ci resta che passarli nella vista, possiamo utilizzare la compact()
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+  return view('nome.vista', compact('articles'))
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Salvare dei File nel progetto (es. Immagini)
 
-## Contributing
+1. Il form deve avere: enctype="multipart/form-data"
+2. NB. Il file in se non viene salvato nel DB, ma nel DB salviamo solamente il suo percorso.
+3. Ora devo struttura il mio DB aggiungendo una colonna:
+    php artisan make:migration add_img_column_to_articles_table
+4. Devo aggiornare il mio modello
+5. Aggiorno la funzione Article::create
+6. php artisan storage:link
+7. Nelle mie viste, mostro l'immagine: Storage::url($article->img)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Consistenza Dei Dati**
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Validazione
+1. Creo una request personalizzata
+2. Inserisco true nella funziona authorize()
+3. Inserisco le regole nella funzione rules()
+4. se voglio personalizzare i messaggi di errore, creo una funzione messages() in cui imposto i messaggi di errore
+5. per visualizzare gli errori, uso gli snippet che trovo nella documentazione (laravel -> validation -> displaying the validation errors)

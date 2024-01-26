@@ -2,29 +2,12 @@
 
     <header class="container marghed">
         <h1 class="text-center ">BLOG VIAGGI<i class="fa-solid fa-plane-departure"></i></h1>
+       
         <div class="row justify-content-around h-100">
             <div class="col-12 col-md-3 mt-5 imgheader">
                 <img src="/img/header.webp" alt="" class="img-fluid ">
             </div>
             <div class="col-12 col-md-4 mt-4 text-dark  fw-bold par">
-
-                 {{-- codice per lasciare un messaggio all'utente dopo l'invio o no della mail--}}
-     
-    {{-- successo --}}
-    @if(session('error'))
-    <div class="alert alert-success">
-        {{session('error')}}
-    </div>
-    @endif 
-
-    {{-- errore --}}
-    @if(session('message'))
-    <div class="alert alert-danger">
-        {{session('message')}}
-    </div>
-    @endif 
-
-                
                 <p>Benvenuti nel blog di viaggi di Marco e Felicity (o travel blog), una guida virtuale che vi accompagnerà nel mondo dei viaggi e delle avventure in giro per il mondo! Qui troverete una vasta gamma di consigli di viaggio per le destinazioni più affascinanti d’Italia e del mondo.Sia che siate alla ricerca di un’esperienza esotica in una terra lontana o desideriate scoprire i tesori nascosti delle città italiane, siamo qui per fornirvi ispirazione e preziosi suggerimenti.</p>
             </div>
         </div>

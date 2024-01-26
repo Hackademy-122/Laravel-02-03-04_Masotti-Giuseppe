@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Throwable;
+use App\Models\Article;
 use App\Mail\ContactMail;
 use Illuminate\Http\Request;
 use Symfony\Component\Mime\Email;
@@ -34,6 +35,12 @@ class PublicController extends Controller
             }
         }
     }
+
+    public function card() {
+        $articles = Article::all();
+        return view('card',compact('articles'));
+    }
+    
     
     public function assicurazioni() {
         return view('assicurazioni');
@@ -51,12 +58,16 @@ class PublicController extends Controller
     try{ 
         Mail::to($email)->send(new ContactMail($email,$name,$text));
     } catch (Throwable $e) {
-        return redirect(route('welcome'))->with('error', "C'è stato un errore imprevisto. Riprova più tardi");
+        return redirect(route('sendmail'))->with('error', "C'è stato un errore imprevisto. Riprova più tardi");
     
   }
-  return redirect(route('welcome'))->with('message','email inviata , grazie per averci contattato');
+  return redirect(route('sendmail'))->with('message','Email inviata con successo. ');
   
   }
+
+  public function sendmail() {
+    return view('sendmail');
+}
 
 
 }

@@ -116,3 +116,9 @@ border-bottom: 10px solid rgb(214, 156, 31);
 .icf{
    font-size: 25px;
 }
+
+/* card */
+.card-img-custom{
+    object-fit:cover;
+    height: 150px;
+}
